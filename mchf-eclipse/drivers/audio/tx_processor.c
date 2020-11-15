@@ -22,6 +22,7 @@
 #include "freedv_uhsdr.h"
 #include "freq_shift.h"
 #include "cw_gen.h"
+#include "cw_decoder.h"
 
 #include "usbd_audio_if.h"
 
@@ -881,6 +882,12 @@ static bool TxProcessor_CW(audio_block_t a_block, iq_buffer_t* iq_buf_p, uint16_
     else
     {
         memset ( a_block, 0, sizeof( a_block[0]) * blockSize );
+    }
+
+    if (ts.cw_keyer_mode == CW_KEYER_MODE_STRAIGHT)
+    {
+        // Send the sidetone through the RX decoder to interpret the keyed code
+        CwDecode_RxProcessor(a_block, blockSize);
     }
 
     return signal_active;
